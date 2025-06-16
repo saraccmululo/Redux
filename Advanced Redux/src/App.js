@@ -5,6 +5,7 @@ import Products from "./components/Shop/Products";
 import { useDispatch, useSelector } from "react-redux";
 import { uiActions } from "./store/ui-slice";
 import Notification from "./components/UI/Notification";
+import { sendCartData } from "./store/cart-actions";
 
 let isInitial = true;
 
@@ -15,7 +16,14 @@ function App() {
   const cart = useSelector((state) => state.cart);
 
   useEffect(() => {
-    const sendCartData = async () => {
+
+    if (isInitial) {//only stops the side effect, not the app rendering. It affects whether sendCartData() runs inside useEffect, not the UI. useEffect runs after component is mounted.
+      isInitial = false;
+      return;
+    }
+    dispatch(sendCartData(cart));
+
+    /* const sendCartData = async () => {
       dispatch(
         uiActions.showNotification({
           status: "pending",
@@ -53,8 +61,8 @@ function App() {
           message: "Failed to send cart data!",
         })
       );
-    });
-  }, [cart]);
+    }); */
+  }, [cart, dispatch]);
 
   return (
     <>
