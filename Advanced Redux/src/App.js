@@ -5,7 +5,7 @@ import Products from "./components/Shop/Products";
 import { useDispatch, useSelector } from "react-redux";
 import { uiActions } from "./store/ui-slice";
 import Notification from "./components/UI/Notification";
-import { sendCartData } from "./store/cart-actions";
+import { fetchCartData, sendCartData } from "./store/cart-actions";
 
 let isInitial = true;
 
@@ -15,13 +15,20 @@ function App() {
   const showCart = useSelector((state) => state.ui.cartIsVisible);
   const cart = useSelector((state) => state.cart);
 
+  
+  useEffect(()=> {
+    dispatch(fetchCartData())
+  }, []);
+  
   useEffect(() => {
-
     if (isInitial) {//only stops the side effect, not the app rendering. It affects whether sendCartData() runs inside useEffect, not the UI. useEffect runs after component is mounted.
       isInitial = false;
       return;
     }
-    dispatch(sendCartData(cart));
+    if(cart.changed) {
+      dispatch(sendCartData(cart));
+    }
+    
 
     /* const sendCartData = async () => {
       dispatch(
@@ -62,7 +69,7 @@ function App() {
         })
       );
     }); */
-  }, [cart, dispatch]);
+  }, [cart]);
 
   return (
     <>
